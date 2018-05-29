@@ -28,14 +28,14 @@ program shielded_vortex
 	!filename='field_init.plt'
 	call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 	
-	time_start=MPI_WTIME()
+!	time_start=MPI_WTIME()
 	
 	write(filename,"('Taylor',F4.1,'.plt')") time
 	call write_data(rho,u,v,p,xx,yy,filename)
 
 	
-	!time_start=MPI_WTIME()
-	!call Euler2d_solver(rho,u,v,p,xx,yy)
+	time_start=MPI_WTIME()
+	call Euler2d_solver(rho,u,v,p,xx,yy)
 	call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 	time_end=MPI_WTIME()
 
