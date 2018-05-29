@@ -4,7 +4,7 @@
 
 	integer :: i,j,iter,ns
 
-	real(kind=OCFD_REAL_KIND) :: T
+!	real(kind=OCFD_REAL_KIND) :: T
 
 	real(kind=OCFD_REAL_KIND),dimension(1-LAP:nx+LAP,1-LAP:ny+LAP) :: u,v,p,rho
 	real(kind=OCFD_REAL_KIND),dimension(1-LAP:nx+LAP,1-LAP:ny+LAP) :: xx,yy
