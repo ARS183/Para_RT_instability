@@ -1,14 +1,14 @@
 # openNS2d V0.2 input file
 #     nx      |    ny
-     601           81
+     61           241
 #    npx0     |   npy0
-      3            2
+      2            4
 #    slx      |   sly
-     120.d0       8.d0
+     0.25d0       1.d0
 # Iperiodic_X | Iperiodic_Y  (0:nonperiodical  1:periodical)
-      0             0
+      1             0
 #     Re      |    dt       |    rf      |    eps
-     1.d0	      1.d-3         1.d0	     1.d-6
+     1.d0	      1.d-5         1.d0	     1.d-6
 #  Istep_show | Istep_save
        100           1000
 #  NUM_METHOD_CONV | NUM_METHOD_OTH

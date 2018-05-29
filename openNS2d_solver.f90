@@ -10,18 +10,26 @@
 	real(kind=OCFD_REAL_KIND),dimension(1-LAP:nx+LAP,1-LAP:ny+LAP) :: xx,yy
 !	real(kind=OCFD_REAL_KIND),dimension(1-LAP:nx+LAP,1-LAP:ny+LAP) ::
 
-    T=100.d0 !
+    T=3.d0 !
     ns=int(T/dt) !!
 	write(*,*) ns
 	do iter=1,ns
 		call RK4(rho,u,v,p)
 		write(*,*) iter
 		write(*,*) iter*dt
-		if (mod(iter,10000)==0) then
+
+		if (iter==10000) then
 			call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 			write(filename,"('Taylor',F5.1,'.plt')") iter*dt
 			call write_data(rho,u,v,p,xx,yy,filename)
 		endif
+
+		if (mod(iter,50000)==0) then
+			call MPI_BARRIER(MPI_COMM_WORLD,ierr)
+			write(filename,"('Taylor',F5.1,'.plt')") iter*dt
+			call write_data(rho,u,v,p,xx,yy,filename)
+		endif
+		
 	end do
 
 
@@ -96,25 +104,25 @@ subroutine computeR(rho,u,v,p,R_st,R_nd,R_rd,R_th)
 		call check_x2d(Eneg4)
 
 		do j=1,ny
-			call Du2Dx_PADE4(Epos1(:,j),d2f_Epos1(:,j))
-			call Du2Dx_PADE4(Eneg1(:,j),d2f_Eneg1(:,j))
-			call DuDx_UCC_UpWind(Epos1(:,j),d2f_Epos1(:,j),df_Epos1(:,j))
-			call DuDx_UCC_DownWind(Eneg1(:,j),d2f_Eneg1(:,j),df_Eneg1(:,j))
+			call Du2Dx_PADE4(Epos1(:,j),d2f_Epos1(:,j),Iperiodic_X)
+			call Du2Dx_PADE4(Eneg1(:,j),d2f_Eneg1(:,j),Iperiodic_X)
+			call DuDx_UCC_UpWind(Epos1(:,j),d2f_Epos1(:,j),df_Epos1(:,j),Iperiodic_X)
+			call DuDx_UCC_DownWind(Eneg1(:,j),d2f_Eneg1(:,j),df_Eneg1(:,j),Iperiodic_X)
 
-			call Du2Dx_PADE4(Epos2(:,j),d2f_Epos2(:,j))
-			call Du2Dx_PADE4(Eneg2(:,j),d2f_Eneg2(:,j))
-			call DuDx_UCC_UpWind(Epos2(:,j),d2f_Epos2(:,j),df_Epos2(:,j))
-			call DuDx_UCC_DownWind(Eneg2(:,j),d2f_Eneg2(:,j),df_Eneg2(:,j))
+			call Du2Dx_PADE4(Epos2(:,j),d2f_Epos2(:,j),Iperiodic_X)
+			call Du2Dx_PADE4(Eneg2(:,j),d2f_Eneg2(:,j),Iperiodic_X)
+			call DuDx_UCC_UpWind(Epos2(:,j),d2f_Epos2(:,j),df_Epos2(:,j),Iperiodic_X)
+			call DuDx_UCC_DownWind(Eneg2(:,j),d2f_Eneg2(:,j),df_Eneg2(:,j),Iperiodic_X)
 
-			call Du2Dx_PADE4(Epos3(:,j),d2f_Epos3(:,j))
-			call Du2Dx_PADE4(Eneg3(:,j),d2f_Eneg3(:,j))
-			call DuDx_UCC_UpWind(Epos3(:,j),d2f_Epos3(:,j),df_Epos3(:,j))
-			call DuDx_UCC_DownWind(Eneg3(:,j),d2f_Eneg3(:,j),df_Eneg3(:,j))
+			call Du2Dx_PADE4(Epos3(:,j),d2f_Epos3(:,j),Iperiodic_X)
+			call Du2Dx_PADE4(Eneg3(:,j),d2f_Eneg3(:,j),Iperiodic_X)
+			call DuDx_UCC_UpWind(Epos3(:,j),d2f_Epos3(:,j),df_Epos3(:,j),Iperiodic_X)
+			call DuDx_UCC_DownWind(Eneg3(:,j),d2f_Eneg3(:,j),df_Eneg3(:,j),Iperiodic_X)
 
-			call Du2Dx_PADE4(Epos4(:,j),d2f_Epos4(:,j))
-			call Du2Dx_PADE4(Eneg4(:,j),d2f_Eneg4(:,j))
-			call DuDx_UCC_UpWind(Epos4(:,j),d2f_Epos4(:,j),df_Epos4(:,j))
-			call DuDx_UCC_DownWind(Eneg4(:,j),d2f_Eneg4(:,j),df_Eneg4(:,j))
+			call Du2Dx_PADE4(Epos4(:,j),d2f_Epos4(:,j),Iperiodic_X)
+			call Du2Dx_PADE4(Eneg4(:,j),d2f_Eneg4(:,j),Iperiodic_X)
+			call DuDx_UCC_UpWind(Epos4(:,j),d2f_Epos4(:,j),df_Epos4(:,j),Iperiodic_X)
+			call DuDx_UCC_DownWind(Eneg4(:,j),d2f_Eneg4(:,j),df_Eneg4(:,j),Iperiodic_X)
 		end do
 
 	elseif (npx0==1) then
@@ -153,25 +161,25 @@ subroutine computeR(rho,u,v,p,R_st,R_nd,R_rd,R_th)
 		call check_y2d(Fneg4)
 
 		do i=1,nx
-			call Du2Dy_PADE4(Fpos1(i,:),d2f_Fpos1(i,:))
-			call Du2Dy_PADE4(Fneg1(i,:),d2f_Fneg1(i,:))
-			call DuDy_UCC_UpWind(Fpos1(i,:),d2f_Fpos1(i,:),df_Fpos1(i,:))
-			call DuDy_UCC_DownWind(Fneg1(i,:),d2f_Fneg1(i,:),df_Fneg1(i,:))
+			call Du2Dy_PADE4(Fpos1(i,:),d2f_Fpos1(i,:),Iperiodic_Y)
+			call Du2Dy_PADE4(Fneg1(i,:),d2f_Fneg1(i,:),Iperiodic_Y)
+			call DuDy_UCC_UpWind(Fpos1(i,:),d2f_Fpos1(i,:),df_Fpos1(i,:),Iperiodic_Y)
+			call DuDy_UCC_DownWind(Fneg1(i,:),d2f_Fneg1(i,:),df_Fneg1(i,:),Iperiodic_Y)
 
-			call Du2Dy_PADE4(Fpos2(i,:),d2f_Fpos2(i,:))
-			call Du2Dy_PADE4(Fneg2(i,:),d2f_Fneg2(i,:))
-			call DuDy_UCC_UpWind(Fpos2(i,:),d2f_Fpos2(i,:),df_Fpos2(i,:))
-			call DuDy_UCC_DownWind(Fneg2(i,:),d2f_Fneg2(i,:),df_Fneg2(i,:))
+			call Du2Dy_PADE4(Fpos2(i,:),d2f_Fpos2(i,:),Iperiodic_Y)
+			call Du2Dy_PADE4(Fneg2(i,:),d2f_Fneg2(i,:),Iperiodic_Y)
+			call DuDy_UCC_UpWind(Fpos2(i,:),d2f_Fpos2(i,:),df_Fpos2(i,:),Iperiodic_Y)
+			call DuDy_UCC_DownWind(Fneg2(i,:),d2f_Fneg2(i,:),df_Fneg2(i,:),Iperiodic_Y)
 
-			call Du2Dy_PADE4(Fpos3(i,:),d2f_Fpos3(i,:))
-			call Du2Dy_PADE4(Fneg3(i,:),d2f_Fneg3(i,:))
-			call DuDy_UCC_UpWind(Fpos3(i,:),d2f_Fpos3(i,:),df_Fpos3(i,:))
-			call DuDy_UCC_DownWind(Fneg3(i,:),d2f_Fneg3(i,:),df_Fneg3(i,:))
+			call Du2Dy_PADE4(Fpos3(i,:),d2f_Fpos3(i,:),Iperiodic_Y)
+			call Du2Dy_PADE4(Fneg3(i,:),d2f_Fneg3(i,:),Iperiodic_Y)
+			call DuDy_UCC_UpWind(Fpos3(i,:),d2f_Fpos3(i,:),df_Fpos3(i,:),Iperiodic_Y)
+			call DuDy_UCC_DownWind(Fneg3(i,:),d2f_Fneg3(i,:),df_Fneg3(i,:),Iperiodic_Y)
 
-			call Du2Dy_PADE4(Fpos4(i,:),d2f_Fpos4(i,:))
-			call Du2Dy_PADE4(Fneg4(i,:),d2f_Fneg4(i,:))
-			call DuDy_UCC_UpWind(Fpos4(i,:),d2f_Fpos4(i,:),df_Fpos4(i,:))
-			call DuDy_UCC_DownWind(Fneg4(i,:),d2f_Fneg4(i,:),df_Fneg4(i,:))
+			call Du2Dy_PADE4(Fpos4(i,:),d2f_Fpos4(i,:),Iperiodic_Y)
+			call Du2Dy_PADE4(Fneg4(i,:),d2f_Fneg4(i,:),Iperiodic_Y)
+			call DuDy_UCC_UpWind(Fpos4(i,:),d2f_Fpos4(i,:),df_Fpos4(i,:),Iperiodic_Y)
+			call DuDy_UCC_DownWind(Fneg4(i,:),d2f_Fneg4(i,:),df_Fneg4(i,:),Iperiodic_Y)
 		end do
 
 	elseif (npy0==1) then
@@ -200,8 +208,9 @@ subroutine computeR(rho,u,v,p,R_st,R_nd,R_rd,R_th)
 
 	R_st=-(df_Epos1+df_Eneg1)-(df_Fpos1+df_Fneg1)
 	R_nd=-(df_Epos2+df_Eneg2)-(df_Fpos2+df_Fneg2)
-	R_rd=-(df_Epos3+df_Eneg3)-(df_Fpos3+df_Fneg3)
-	R_th=-(df_Epos4+df_Eneg4)-(df_Fpos4+df_Fneg4)
+	R_rd=-(df_Epos3+df_Eneg3)-(df_Fpos3+df_Fneg3)+rho
+	R_th=-(df_Epos4+df_Eneg4)-(df_Fpos4+df_Fneg4)+rhp*v
+
 	
 
 end subroutine
@@ -258,12 +267,19 @@ subroutine RK4(rho,u,v,p)
 		end do
 	end do
 
-!	if (npx==0) then
-!		p(1,:)=p0
-!		rho(1,:)=rho0
-!		u(1,:)=u0
-!		v(1,:)=0.d0
-!	endif
+	if (npy==0) then
+		p(:,1)=1.d0
+		rho(:,1)=2.d0
+		u(:,1)=0.d0
+		v(:,1)=0.d0
+	endif
+
+	if (npy==npy0-1) then
+		p(:,1)=2.5d0
+		rho(:,1)=1.d0
+		u(:,1)=0.d0
+		v(:,1)=0.d0
+	endif
 
 	call computeR(rho,u,v,p,R_st1,R_nd1,R_rd1,R_th1)
 
@@ -282,12 +298,19 @@ subroutine RK4(rho,u,v,p)
 		end do
 	end do
 
-!	if (npx==0) then
-!		p(1,:)=p0
-!		rho(1,:)=rho0
-!		u(1,:)=u0
-!		v(1,:)=0.d0
-!	endif
+	if (npy==0) then
+		p(:,1)=1.d0
+		rho(:,1)=2.d0
+		u(:,1)=0.d0
+		v(:,1)=0.d0
+	endif
+
+	if (npy==npy0-1) then
+		p(:,1)=2.5d0
+		rho(:,1)=1.d0
+		u(:,1)=0.d0
+		v(:,1)=0.d0
+	endif
 
 	call computeR(rho,u,v,p,R_st2,R_nd2,R_rd2,R_th2)
 
@@ -305,12 +328,19 @@ subroutine RK4(rho,u,v,p)
 		end do
 	end do
 	
-!	if (npx==0) then
-!		p(1,:)=p0
-!		rho(1,:)=rho0
-!		u(1,:)=u0
-!		v(1,:)=0.d0
-!	endif
+	if (npy==0) then
+		p(:,1)=1.d0
+		rho(:,1)=2.d0
+		u(:,1)=0.d0
+		v(:,1)=0.d0
+	endif
+
+	if (npy==npy0-1) then
+		p(:,1)=2.5d0
+		rho(:,1)=1.d0
+		u(:,1)=0.d0
+		v(:,1)=0.d0
+	endif
 
 	call computeR(rho,u,v,p,R_st3,R_nd3,R_rd3,R_th3)
 
@@ -328,11 +358,18 @@ subroutine RK4(rho,u,v,p)
 		end do
 	end do
 
-!	if (npx==0) then
-!		p(1,:)=p0
-!		rho(1,:)=rho0
-!		u(1,:)=u0
-!		v(1,:)=0.d0
-!	endif
+	if (npy==0) then
+		p(:,1)=1.d0
+		rho(:,1)=2.d0
+		u(:,1)=0.d0
+		v(:,1)=0.d0
+	endif
+
+	if (npy==npy0-1) then
+		p(:,1)=2.5d0
+		rho(:,1)=1.d0
+		u(:,1)=0.d0
+		v(:,1)=0.d0
+	endif
 
 end subroutine RK4

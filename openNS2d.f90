@@ -24,15 +24,18 @@ program shielded_vortex
 		xx(1-LAP:nx+LAP,1-LAP:ny+LAP),yy(1-LAP:nx+LAP,1-LAP:ny+LAP),rho(1-LAP:nx+LAP,1-LAP:ny+LAP))
 
 	time=0.d0
-	call init_TV(rho,u,v,p,xx,yy) !!
+	call init_RT(rho,u,v,p,xx,yy) !!
 	!filename='field_init.plt'
 	call MPI_BARRIER(MPI_COMM_WORLD,ierr)
+	
+	time_start=MPI_WTIME()
+	
 	write(filename,"('Taylor',F4.1,'.plt')") time
 	call write_data(rho,u,v,p,xx,yy,filename)
 
 	
-	time_start=MPI_WTIME()
-	call Euler2d_solver(rho,u,v,p,xx,yy)
+	!time_start=MPI_WTIME()
+	!call Euler2d_solver(rho,u,v,p,xx,yy)
 	call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 	time_end=MPI_WTIME()
 
