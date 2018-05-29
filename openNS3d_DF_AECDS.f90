@@ -749,3 +749,39 @@ subroutine trid(n0,n,a,b,c,d)
 end	subroutine
     
 
+!===循环三对角的追赶法===
+	  subroutine trid_circle(n0,n,center,up,low,right)
+	  !
+      ! a:center b:up c:low d:right e:upright-corner f:downleft-corner
+	  include 'openNS3d.h'
+	  real(kind=OCFD_REAL_KIND)::urc,dlc,w1,w2,det
+	  real(kind=OCFD_REAL_KIND)::center(1-LAP:n+LAP),up(1-LAP:n+LAP),low(1-LAP:n+LAP)
+	  real(kind=OCFD_REAL_KIND)::right(1-LAP:n+LAP),x(1-LAP:n+LAP),u(1-LAP:n+LAP),v(1-LAP:n+LAP)
+
+	  urc=low(1)
+	  dlc=up(n)
+	  
+	  call trid(n0,n,center,up,low,right)
+	  x(n0:n)=right(n0:n)
+
+	  right(n0)=1
+	  right(n0+1:n)=0
+	  call trid(n0,n,center,up,low,right)
+	  u(n0:n)=right(n0:n)
+
+	  right(n)=1
+	  right(n0:n-1)=0
+	  call trid(n0,n,center,up,low,right)
+	  v(n0:n)=right(n0:n)
+
+	  det=u(1)*v(n)-(v(1)+1.d0/dlc)*(u(n)+1.d0/urc)
+	  w1=(v(n)*x(1)-(v(1)+1.d0/dlc)*x(n))/det
+	  w2=(-(u(n)+1.d0/urc)*x(1)+u(1)*x(n))/det
+
+	  x=x-w1*u-w2*v
+
+	  right(n0:n)=x(n0:n)
+
+	  return
+
+	  end subroutine
