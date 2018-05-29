@@ -31,18 +31,18 @@ subroutine init_RT(rho,u,v,p,xx,yy) !!
 		xx(i,j)=xbeg+dble(i_global-1)*hx
 		yy(i,j)=ybeg+dble(j_global-1)*hy
 
-		if (yy(i,y) .gt. 0.5d0) then
+		if (yy(i,j) .gt. 0.5d0) then
 			rho(i,j)=1.d0
 			u(i,j)=0.d0
 			p(i,j)=yy(i,j)+1.5d0
 			cs(i,j)=dsqrt(gama*p(i,j)/rho(i,j))
-			v(i,j)=-0.025d0*cs(i,j)*dcos(8.d0*pi*x(i,j))
+			v(i,j)=-0.025d0*cs(i,j)*dcos(8.d0*pi*xx(i,j))
 		else
 			rho(i,j)=2.d0
 			u(i,j)=0.d0
 			p(i,j)=2.d0*yy(i,j)+1.d0
 			cs(i,j)=dsqrt(gama*p(i,j)/rho(i,j))
-			v(i,j)=-0.025d0*cs(i,j)*dcos(8.d0*pi*x(i,j))
+			v(i,j)=-0.025d0*cs(i,j)*dcos(8.d0*pi*xx(i,j))
 		endif
 	enddo
 	enddo
@@ -55,10 +55,10 @@ subroutine init_RT(rho,u,v,p,xx,yy) !!
 	endif
 
 	if (npy==npy0-1) then
-		p(:,1)=2.5d0
-		rho(:,1)=1.d0
-		u(:,1)=0.d0
-		v(:,1)=0.d0
+		p(:,ny)=2.5d0
+		rho(:,ny)=1.d0
+		u(:,ny)=0.d0
+		v(:,ny)=0.d0
 	endif
 
 
