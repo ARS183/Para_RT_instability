@@ -383,3 +383,135 @@ subroutine RK4(rho,u,v,p)
 
 
 end subroutine RK4
+
+
+
+!!!!==============================================================
+
+!!!!==============================================================
+subroutine TVD_RK3(rho,u,v,p)
+	include 'openNS3d.h'
+
+	integer :: i,j
+
+	real(kind=OCFD_REAL_KIND),parameter::gama=5.d0/3.d0
+
+	real(kind=OCFD_REAL_KIND),parameter::M0=0.4d0,Mv=0.2d0,p0=1.d0/gama/M0**2.d0,rho0=1.d0,u0=1.d0
+
+	real(kind=OCFD_REAL_KIND),dimension(1-LAP:nx+LAP,1-LAP:ny+LAP) :: u,v,p,rho
+
+	real(kind=OCFD_REAL_KIND),dimension(1-LAP:nx+LAP,1-LAP:ny+LAP) :: R_st,R_nd,R_rd,R_th
+	real(kind=OCFD_REAL_KIND),dimension(1-LAP:nx+LAP,1-LAP:ny+LAP) :: R_st1,R_nd1,R_rd1,R_th1
+	real(kind=OCFD_REAL_KIND),dimension(1-LAP:nx+LAP,1-LAP:ny+LAP) :: R_st2,R_nd2,R_rd2,R_th2
+	real(kind=OCFD_REAL_KIND),dimension(1-LAP:nx+LAP,1-LAP:ny+LAP) :: R_st3,R_nd3,R_rd3,R_th3
+
+	real(kind=OCFD_REAL_KIND),dimension(1-LAP:nx+LAP,1-LAP:ny+LAP) :: Q_st,Q_nd,Q_rd,Q_th
+	real(kind=OCFD_REAL_KIND),dimension(1-LAP:nx+LAP,1-LAP:ny+LAP) :: Q_st1,Q_nd1,Q_rd1,Q_th1
+	real(kind=OCFD_REAL_KIND),dimension(1-LAP:nx+LAP,1-LAP:ny+LAP) :: Q_st2,Q_nd2,Q_rd2,Q_th2
+	real(kind=OCFD_REAL_KIND),dimension(1-LAP:nx+LAP,1-LAP:ny+LAP) :: Q_st3,Q_nd3,Q_rd3,Q_th3
+
+!	gama=1.4d0
+
+	call computeR(rho,u,v,p,R_st,R_nd,R_rd,R_th)
+
+
+	do j=1,ny
+		do i=1,nx
+			Q_st(i,j)=rho(i,j)
+			Q_nd(i,j)=rho(i,j)*u(i,j)
+			Q_rd(i,j)=rho(i,j)*v(i,j)
+			Q_th(i,j)=p(i,j)/(gama-1.d0)+rho(i,j)/2.d0*(u(i,j)**2.d0+v(i,j)**2.d0)
+		end do
+	end do
+
+	Q_st1=Q_st+dt*R_st
+	Q_nd1=Q_nd+dt*R_nd
+	Q_rd1=Q_rd+dt*R_rd
+	Q_th1=Q_th+dt*R_th
+
+	do j=1,ny
+		do i=1,nx
+			rho(i,j)=Q_st1(i,j)
+			u(i,j)=Q_nd1(i,j)/rho(i,j)
+			v(i,j)=Q_rd1(i,j)/rho(i,j)
+			p(i,j)=(gama-1.d0)*(Q_th1(i,j)-rho(i,j)/2.d0*(u(i,j)**2.d0+v(i,j)**2.d0))
+		end do
+	end do
+
+	if (npy==0) then
+		p(:,1)=1.d0
+		rho(:,1)=2.d0
+		u(:,1)=0.d0
+		v(:,1)=0.d0
+	endif
+
+	if (npy==npy0-1) then
+		p(:,ny)=2.5d0
+		rho(:,ny)=1.d0
+		u(:,ny)=0.d0
+		v(:,ny)=0.d0
+	endif
+
+
+	call computeR(rho,u,v,p,R_st1,R_nd1,R_rd1,R_th1)
+
+
+	Q_st2=3.d0/4.d0*Q_st+1.d0/4.d0*Q_st1+(dt/4.d0)*R_st1
+	Q_nd2=3.d0/4.d0*Q_nd+1.d0/4.d0*Q_nd1+(dt/4.d0)*R_nd1
+	Q_rd2=3.d0/4.d0*Q_rd+1.d0/4.d0*Q_rd1+(dt/4.d0)*R_rd1
+	Q_th2=3.d0/4.d0*Q_th+1.d0/4.d0*Q_th1+(dt/4.d0)*R_th1
+
+	do j=1,ny
+		do i=1,nx
+			rho(i,j)=Q_st2(i,j)
+			u(i,j)=Q_nd2(i,j)/rho(i,j)
+			v(i,j)=Q_rd2(i,j)/rho(i,j)
+			p(i,j)=(gama-1.d0)*(Q_th2(i,j)-rho(i,j)/2.d0*(u(i,j)**2.d0+v(i,j)**2.d0))
+		end do
+	end do
+
+	if (npy==0) then
+		p(:,1)=1.d0
+		rho(:,1)=2.d0
+		u(:,1)=0.d0
+		v(:,1)=0.d0
+	endif
+
+	if (npy==npy0-1) then
+		p(:,ny)=2.5d0
+		rho(:,ny)=1.d0
+		u(:,ny)=0.d0
+		v(:,ny)=0.d0
+	endif
+
+	call computeR(rho,u,v,p,R_st2,R_nd2,R_rd2,R_th2)
+
+	Q_st3=Q_st/3.d0+2.d0/3.d0*Q_st2+2.d0/3.d0*dt*R_st2
+	Q_nd3=Q_nd/3.d0+2.d0/3.d0*Q_nd2+2.d0/3.d0*dt*R_nd2
+	Q_rd3=Q_rd/3.d0+2.d0/3.d0*Q_rd2+2.d0/3.d0*dt*R_rd2
+	Q_th3=Q_th/3.d0+2.d0/3.d0*Q_th2+2.d0/3.d0*dt*R_th2
+	
+	do j=1,ny
+		do i=1,nx
+			rho(i,j)=Q_st3(i,j)
+			u(i,j)=Q_nd3(i,j)/rho(i,j)
+			v(i,j)=Q_rd3(i,j)/rho(i,j)
+			p(i,j)=(gama-1.d0)*(Q_th3(i,j)-rho(i,j)/2.d0*(u(i,j)**2.d0+v(i,j)**2.d0))
+		end do
+	end do
+	
+	if (npy==0) then
+		p(:,1)=1.d0
+		rho(:,1)=2.d0
+		u(:,1)=0.d0
+		v(:,1)=0.d0
+	endif
+
+	if (npy==npy0-1) then
+		p(:,ny)=2.5d0
+		rho(:,ny)=1.d0
+		u(:,ny)=0.d0
+		v(:,ny)=0.d0
+	endif
+
+end subroutine TVD_RK3
