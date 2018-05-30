@@ -439,17 +439,17 @@ subroutine TVD_RK3(rho,u,v,p)
 	end do
 
 	if (npy==0) then
-		p(:,1)=1.d0
-		rho(:,1)=2.d0
-		u(:,1)=0.d0
-		v(:,1)=0.d0
+		p(:,1:2)=1.d0
+		rho(:,1:2)=2.d0
+		u(:,1:2)=0.d0
+		v(:,1:2)=0.d0
 	endif
 
 	if (npy==npy0-1) then
-		p(:,ny)=2.5d0
-		rho(:,ny)=1.d0
-		u(:,ny)=0.d0
-		v(:,ny)=0.d0
+		p(:,ny-1:ny)=2.5d0
+		rho(:,ny-1:ny)=1.d0
+		u(:,ny-1:ny)=0.d0
+		v(:,ny-1:ny)=0.d0
 	endif
 
 
@@ -471,17 +471,17 @@ subroutine TVD_RK3(rho,u,v,p)
 	end do
 
 	if (npy==0) then
-		p(:,1)=1.d0
-		rho(:,1)=2.d0
-		u(:,1)=0.d0
-		v(:,1)=0.d0
+		p(:,1:2)=1.d0
+		rho(:,1:2)=2.d0
+		u(:,1:2)=0.d0
+		v(:,1:2)=0.d0
 	endif
 
 	if (npy==npy0-1) then
-		p(:,ny)=2.5d0
-		rho(:,ny)=1.d0
-		u(:,ny)=0.d0
-		v(:,ny)=0.d0
+		p(:,ny-1:ny)=2.5d0
+		rho(:,ny-1:ny)=1.d0
+		u(:,ny-1:ny)=0.d0
+		v(:,ny-1:ny)=0.d0
 	endif
 
 	call computeR(rho,u,v,p,R_st2,R_nd2,R_rd2,R_th2)
@@ -501,17 +501,17 @@ subroutine TVD_RK3(rho,u,v,p)
 	end do
 	
 	if (npy==0) then
-		p(:,1)=1.d0
-		rho(:,1)=2.d0
-		u(:,1)=0.d0
-		v(:,1)=0.d0
+		p(:,1:2)=1.d0
+		rho(:,1:2)=2.d0
+		u(:,1:2)=0.d0
+		v(:,1:2)=0.d0
 	endif
 
 	if (npy==npy0-1) then
-		p(:,ny)=2.5d0
-		rho(:,ny)=1.d0
-		u(:,ny)=0.d0
-		v(:,ny)=0.d0
+		p(:,ny-1:ny)=2.5d0
+		rho(:,ny-1:ny)=1.d0
+		u(:,ny-1:ny)=0.d0
+		v(:,ny-1:ny)=0.d0
 	endif
 
 end subroutine TVD_RK3
