@@ -14,7 +14,7 @@
     ns=ceiling(T/dt)
 	write(*,*) ns
 	do iter=1,ns
-		call RK4(rho,u,v,p)
+		call TVD_RK3(rho,u,v,p)
 		write(*,*) iter
 		write(*,*) iter*dt
 
