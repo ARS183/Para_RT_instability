@@ -11,7 +11,7 @@ subroutine VanLeerE(rho,u,v,p,Epos1,Epos2,Epos3,Epos4,Eneg1,Eneg2,Eneg3,Eneg4)
     real(kind=OCFD_REAL_KIND),dimension(1-LAP:nx+LAP,1-LAP:ny+LAP) :: cs,Me,eng
  
 
-    gama=1.4d0
+    gama=5.d0/3.d0
     do j=1,ny
         do i=1,nx
             cs(i,j)=dsqrt(gama*p(i,j)/rho(i,j))
@@ -75,7 +75,7 @@ subroutine VanLeerF(rho,u,v,p,Fpos1,Fpos2,Fpos3,Fpos4,Fneg1,Fneg2,Fneg3,Fneg4)
     real(kind=OCFD_REAL_KIND),dimension(1-LAP:nx+LAP,1-LAP:ny+LAP) :: cs,Mf,eng
 
 
-    gama=1.4d0
+    gama=5.d0/3.d0
     do j=1,ny
         do i=1,nx
             cs(i,j)=dsqrt(gama*p(i,j)/rho(i,j))

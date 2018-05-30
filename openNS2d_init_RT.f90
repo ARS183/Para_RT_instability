@@ -61,15 +61,5 @@ subroutine init_RT(rho,u,v,p,xx,yy) !!
 		v(:,ny)=0.d0
 	endif
 
-	if (npx==0) then
-		u(1,:)=0.d0
-		v(1,:)=0.d0
-	endif
-
-	if (npx==npx0-1) then
-		u(nx,:)=0.d0
-		v(nx,:)=0.d0
-	endif
-
 !!
 	end subroutine
