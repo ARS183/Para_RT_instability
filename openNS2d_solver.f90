@@ -24,7 +24,7 @@
 			call write_data(rho,u,v,p,xx,yy,filename)
 		endif
 
-		if (mod(iter,50000)==0) then
+		if (mod(iter,25000)==0) then
 			call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 			write(filename,"('Taylor',F5.1,'.plt')") iter*dt
 			call write_data(rho,u,v,p,xx,yy,filename)
@@ -208,9 +208,15 @@ subroutine computeR(rho,u,v,p,R_st,R_nd,R_rd,R_th)
 
 	R_st=-(df_Epos1+df_Eneg1)-(df_Fpos1+df_Fneg1)
 	R_nd=-(df_Epos2+df_Eneg2)-(df_Fpos2+df_Fneg2)
-	R_rd=-(df_Epos3+df_Eneg3)-(df_Fpos3+df_Fneg3)+rho
-	R_th=-(df_Epos4+df_Eneg4)-(df_Fpos4+df_Fneg4)+rho*v
+	R_rd=-(df_Epos3+df_Eneg3)-(df_Fpos3+df_Fneg3)
+	R_th=-(df_Epos4+df_Eneg4)-(df_Fpos4+df_Fneg4)
 
+	do j=1,ny
+		do i=1,nx
+			R_rd(i,j)=R_rd(i,j)+rho(i,j)
+			R_th(i,j)=R_th(i,j)+rho(i,j)*v(i,j)
+		end do
+	end do
 	
 
 end subroutine
@@ -281,6 +287,16 @@ subroutine RK4(rho,u,v,p)
 		v(:,ny)=0.d0
 	endif
 
+	if (npx==0) then
+		u(1,:)=0.d0
+		v(1,:)=0.d0
+	endif
+
+	if (npx==npx0-1) then
+		u(nx,:)=0.d0
+		v(nx,:)=0.d0
+	endif
+
 	call computeR(rho,u,v,p,R_st1,R_nd1,R_rd1,R_th1)
 
 
@@ -310,6 +326,16 @@ subroutine RK4(rho,u,v,p)
 		rho(:,ny)=1.d0
 		u(:,ny)=0.d0
 		v(:,ny)=0.d0
+	endif
+
+	if (npx==0) then
+		u(1,:)=0.d0
+		v(1,:)=0.d0
+	endif
+
+	if (npx==npx0-1) then
+		u(nx,:)=0.d0
+		v(nx,:)=0.d0
 	endif
 
 	call computeR(rho,u,v,p,R_st2,R_nd2,R_rd2,R_th2)
@@ -342,6 +368,16 @@ subroutine RK4(rho,u,v,p)
 		v(:,ny)=0.d0
 	endif
 
+	if (npx==0) then
+		u(1,:)=0.d0
+		v(1,:)=0.d0
+	endif
+
+	if (npx==npx0-1) then
+		u(nx,:)=0.d0
+		v(nx,:)=0.d0
+	endif
+
 	call computeR(rho,u,v,p,R_st3,R_nd3,R_rd3,R_th3)
 
 	Q_st=Q_st+(dt/6.d0)*(R_st+2.d0*R_st1+2.d0*R_st2+R_st3)
@@ -372,4 +408,16 @@ subroutine RK4(rho,u,v,p)
 		v(:,ny)=0.d0
 	endif
 
+
+	if (npx==0) then
+		u(1,:)=0.d0
+		v(1,:)=0.d0
+	endif
+
+	if (npx==npx0-1) then
+		u(nx,:)=0.d0
+		v(nx,:)=0.d0
+	endif
+
+	
 end subroutine RK4
