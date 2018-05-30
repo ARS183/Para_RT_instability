@@ -10,7 +10,7 @@
 	real(kind=OCFD_REAL_KIND),dimension(1-LAP:nx+LAP,1-LAP:ny+LAP) :: xx,yy
 !	real(kind=OCFD_REAL_KIND),dimension(1-LAP:nx+LAP,1-LAP:ny+LAP) ::
 
-    T=1.d0 
+    T=2.d0 
     ns=ceiling(T/dt)
 	write(*,*) ns
 	do iter=1,ns
@@ -20,13 +20,13 @@
 
 		if (iter==10000) then
 			call MPI_BARRIER(MPI_COMM_WORLD,ierr)
-			write(filename,"('Taylor',F5.1,'.plt')") iter*dt
+			write(filename,"('Taylor',F5.2,'.plt')") iter*dt
 			call write_data(rho,u,v,p,xx,yy,filename)
 		endif
 
 		if (mod(iter,25000)==0) then
 			call MPI_BARRIER(MPI_COMM_WORLD,ierr)
-			write(filename,"('Taylor',F5.1,'.plt')") iter*dt
+			write(filename,"('Taylor',F5.2,'.plt')") iter*dt
 			call write_data(rho,u,v,p,xx,yy,filename)
 		endif
 		
