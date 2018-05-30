@@ -10,8 +10,8 @@
 	real(kind=OCFD_REAL_KIND),dimension(1-LAP:nx+LAP,1-LAP:ny+LAP) :: xx,yy
 !	real(kind=OCFD_REAL_KIND),dimension(1-LAP:nx+LAP,1-LAP:ny+LAP) ::
 
-    T=3.d0 
-    ns=int(T/dt)
+    T=1.d0 
+    ns=ceiling(T/dt)
 	write(*,*) ns
 	do iter=1,ns
 		call RK4(rho,u,v,p)
@@ -223,7 +223,7 @@ subroutine RK4(rho,u,v,p)
 
 	integer :: i,j
 
-	real(kind=OCFD_REAL_KIND),parameter::gama=1.4d0
+	real(kind=OCFD_REAL_KIND),parameter::gama=5.d0/3.d0
 
 	real(kind=OCFD_REAL_KIND),parameter::M0=0.4d0,Mv=0.2d0,p0=1.d0/gama/M0**2.d0,rho0=1.d0,u0=1.d0
 
