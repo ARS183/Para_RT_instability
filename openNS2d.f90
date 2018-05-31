@@ -75,6 +75,8 @@ end program shielded_vortex
 	read(100,*)Istep_show,Istep_save
 	read(100,*)
 	read(100,*)NUM_METHOD_CONV,NUM_METHOD_OTH
+	read(100,*)
+	read(100,*)T
 	
 
 	close(100)
@@ -98,6 +100,7 @@ end program shielded_vortex
 	Rparameters(4)=dt
 	Rparameters(5)=rf
 	Rparameters(6)=eps
+	Rparameters(7)=T
 
 	call MPI_BCAST(Nparameters,NparaMax,MPI_integer,0,MPI_COMM_WORLD,ierr)
 	call MPI_BCAST(Rparameters,RparaMax,OCFD_DATA_TYPE,0,MPI_COMM_WORLD,ierr)
@@ -121,6 +124,7 @@ end program shielded_vortex
 	dt=Rparameters(4)
 	rf=Rparameters(5)
 	eps=Rparameters(6)
+	T=Rparameters(7)
 
 	call MPI_BARRIER(MPI_COMM_WORLD,ierr)
 	
