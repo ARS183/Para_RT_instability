@@ -1,6 +1,6 @@
 # openNS2d V0.2 input file
 #     nx      |    ny
-     61           241
+     121           481
 #    npx0     |   npy0
       2            4
 #    slx      |   sly
